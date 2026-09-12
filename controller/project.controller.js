@@ -72,17 +72,7 @@ const updateProject = async (req, res) => {
     if (!projectId) {
         return res.status(400).json({ mesaage: "id parameter is missing", success: false, data: null })
     };
-    let parsedOrder;
-    if (order !== undefined) {
-        parsedOrder = Number(order);
-        if (isNaN(parsedOrder)) {
-            return res.status(400).json({
-                message: "Order must be a valid number",
-                success: false,
-                data: null
-            });
-        }
-    }
+
     let parsedCaseStudy;
 
     if (caseStudy) {
@@ -101,7 +91,7 @@ const updateProject = async (req, res) => {
     }
 
 
-    const response = await projectService.updateProject({ projectId, projectTitle, projectDesc, caseStudy: parsedCaseStudy, projectImage, order:parsedOrder })
+    const response = await projectService.updateProject({ projectId, projectTitle, projectDesc, caseStudy: parsedCaseStudy, projectImage, order })
 
     return res.status(response.code).json({ message: response.message, data: response.data, success: response.success })
 }
