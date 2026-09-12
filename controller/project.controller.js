@@ -1,9 +1,9 @@
 const projectService = require("../service/project.service")
 
-const addProject = async(req, res)=>{
+const addProject = async (req, res) => {
     const projectImage = req.file;
     const { projectTitle, projectDesc, caseStudy, order } = req.body;
-    
+
     if (!projectTitle || !projectDesc || !projectImage) {
         return res.status(400).json({
             message: "project title, description and image are required",
@@ -39,42 +39,58 @@ const addProject = async(req, res)=>{
     });
 }
 
-const getProject = async(req, res) => {
-    const {projectId} = req.params;
-    if(!projectId){
-        return res.status(400).json({mesaage: "id parameter is missing", success: false, data: null})
+const getProject = async (req, res) => {
+    const { projectId } = req.params;
+    if (!projectId) {
+        return res.status(400).json({ mesaage: "id parameter is missing", success: false, data: null })
     };
 
     const response = await projectService.getProject(projectId)
-    return res.status(response.code).json({mesaage: response.message, success: response.success, data: response.data})
+    return res.status(response.code).json({ mesaage: response.message, success: response.success, data: response.data })
 }
 
-const getAllProject = async(req, res)=>{
+const getAllProject = async (req, res) => {
     const response = await projectService.getAllProject();
-    return res.status(response.code).json({mesaage: response.message, success: response.success, data: response.data})
+    return res.status(response.code).json({ mesaage: response.message, success: response.success, data: response.data })
 }
 
-const deleteProject = async(req, res)=>{
-    const {projectId} = req.params;
-    if(!projectId){
-        return res.status(400).json({mesaage: "id parameter is missing", success: false, data: null})
+const deleteProject = async (req, res) => {
+    const { projectId } = req.params;
+    if (!projectId) {
+        return res.status(400).json({ mesaage: "id parameter is missing", success: false, data: null })
     };
     const response = await projectService.deleteProject(projectId)
-    return res.status(response.code).json({message: response.message, data : response.data, success: response.success})
+    return res.status(response.code).json({ message: response.message, data: response.data, success: response.success })
 }
 
-const updateProject = async(req, res)=>{
+const updateProject = async (req, res) => {
     const projectImage = req.file;
-    const {projectId} = req.params;
-    const { projectTitle, projectDesc, caseStudy, order} = req.body
-    if(!projectId){
-        return res.status(400).json({mesaage: "id parameter is missing", success: false, data: null})
+    const { projectId } = req.params;
+
+    const { projectTitle, projectDesc, caseStudy, order } = req.body
+   
+    if (!projectId) {
+        return res.status(400).json({ mesaage: "id parameter is missing", success: false, data: null })
     };
+    let parsedOrder;
+    if (order !== undefined) {
+        parsedOrder = Number(order);
+        if (isNaN(parsedOrder)) {
+            return res.status(400).json({
+                message: "Order must be a valid number",
+                success: false,
+                data: null
+            });
+        }
+    }
     let parsedCaseStudy;
 
     if (caseStudy) {
         try {
-            parsedCaseStudy = JSON.parse(caseStudy);
+            parsedCaseStudy =
+                typeof caseStudy === "string"
+                    ? JSON.parse(caseStudy)
+                    : caseStudy;
         } catch (error) {
             return res.status(400).json({
                 message: "Invalid case study JSON",
@@ -85,9 +101,9 @@ const updateProject = async(req, res)=>{
     }
 
 
-    const response = await projectService.updateProject({projectId, projectTitle, projectDesc, caseStudy: parsedCaseStudy, projectImage, order})
-    
-    return res.status(response.code).json({message:response.message, data : response.data, success: response.success})
+    const response = await projectService.updateProject({ projectId, projectTitle, projectDesc, caseStudy: parsedCaseStudy, projectImage, order:parsedOrder })
+
+    return res.status(response.code).json({ message: response.message, data: response.data, success: response.success })
 }
 
 

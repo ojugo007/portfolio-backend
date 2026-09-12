@@ -1,9 +1,10 @@
 ## baseurl:
 `https://portfolio-backend-zj29.onrender.com`
 
-| Method | Route                                   | Protected |
+| Method | Route                                  | Protected |
 | ------ | --------------------------------------- | --------- |
-| POST   | `/auth/signin`                          | ❌         |
+|
+ POST   | `/auth/signin`                          | ❌         |
 | GET    | `/edu/`                                 | ❌         |
 | GET    | `/edu/:educationId`                     | ❌         |
 | POST   | `/edu/add`                              | 🔐        |
