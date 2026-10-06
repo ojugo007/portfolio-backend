@@ -127,6 +127,7 @@ const updateTestimonial = async ({testimonialId, avatar, fullName, position, tes
             console.log("unable to delete temporary file");
         }
     }
+    await testimonialRecord.save()
     return{
         message: "testimonial record successfully updated",
         code: 200,
@@ -152,7 +153,6 @@ const deleteTestimonial = async (testimonialId) => {
         success: true
     }
 }
-
 
 module.exports = {
     addTestimonial,
