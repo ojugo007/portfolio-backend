@@ -1,8 +1,9 @@
 const MessageModel = require("../model/message.model")
 require("dotenv").config()
 const Openai = require("openai")
-const {Resend} = require("resend")
-// const { AI_INSTRUCTIONS } = require("../utils/instruction")
+const { Resend } = require("resend")
+import sanitizeHtml from "sanitize-html"
+
 
 const AI_INSTRUCTIONS = `
 You are an AI communication assistant representing Kenneth Okoro, an automation specialist.
@@ -474,6 +475,7 @@ const generateMessage = async (messageId) => {
             data: null
         }
     }
+    
     // grab user message and email
     const message = userMessage.message;
     const email = userMessage.email
@@ -522,6 +524,7 @@ const generateMessage = async (messageId) => {
 
 const sendResponse = async ({ messageId, message }) => {
     const messageRecord = await MessageModel.findById(messageId)
+
     if (!messageRecord) {
         return {
             message: "message not found",
@@ -530,14 +533,19 @@ const sendResponse = async ({ messageId, message }) => {
             data: null
         }
     }
+
+    if (messageRecord.replied) {
+        return { message: "already replied", code: 409, success: false, data: null }
+    }
+
     const resend = new Resend(process.env.RESEND_SECRET_KEY);
     const { data, error } = await resend.emails.send({
         from: process.env.REPLY_EMAIL,
         to: messageRecord.email,
-        subject: `RE:${messageRecord.message.slice(0 , 20)}...`,
-        html: message
+        subject: `RE:${messageRecord.message.slice(0, 20)}...`,
+        html: sanitizeHtml(message)
     });
-   
+
     if (error) {
         console.error("Resend error:", error);
 
@@ -548,20 +556,20 @@ const sendResponse = async ({ messageId, message }) => {
             data: null
         };
     }
-   messageRecord.replied = true;
-   messageRecord.repliedAt = new Date()
-   await messageRecord.save();
+    messageRecord.replied = true;
+    messageRecord.repliedAt = new Date()
+    await messageRecord.save();
     return {
-        message : "response successfully sent",
-        code : 200,
+        message: "response successfully sent",
+        code: 200,
         success: true,
-        data : {
-            emailId:data.id
+        data: {
+            emailId: data.id
         }
     }
 }
 // delete message
-const deleteMessage = async(messageId)=>{
+const deleteMessage = async (messageId) => {
     const message = await MessageModel.findByIdAndDelete(messageId)
     if (!message) {
         return {
@@ -572,9 +580,9 @@ const deleteMessage = async(messageId)=>{
         };
     }
 
-    return{
-        message:"message successfully deleted",
-        code : 200,
+    return {
+        message: "message successfully deleted",
+        code: 200,
         success: true,
         data: null
     }
