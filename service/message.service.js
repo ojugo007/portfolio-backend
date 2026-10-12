@@ -2,7 +2,7 @@ const MessageModel = require("../model/message.model")
 require("dotenv").config()
 const Openai = require("openai")
 const { Resend } = require("resend")
-import sanitizeHtml from "sanitize-html"
+const sanitizeHtml = require("sanitize-html")
 
 
 const AI_INSTRUCTIONS = `
@@ -475,7 +475,7 @@ const generateMessage = async (messageId) => {
             data: null
         }
     }
-    
+
     // grab user message and email
     const message = userMessage.message;
     const email = userMessage.email
