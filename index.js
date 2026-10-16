@@ -23,7 +23,8 @@ app.use(express.urlencoded({extended: true}))
 app.use(cors({
     origin: [
         "http://localhost:5173",
-        "https://kens-portfolio-nine.vercel.app"
+        "https://kens-portfolio-nine.vercel.app",
+        "https://auto-makeit.vercel.app"
     ]
 }));
 
